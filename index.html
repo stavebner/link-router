@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting...</title>
+    <script>
+        // Replace these with your actual 3-5 links
+        const links = [
+            "https://en.wikipedia.org/wiki/File:Solid_red.svg",
+            "https://en.wikipedia.org/wiki/File:Solid_blue.svg",
+            "https://en.wikipedia.org/wiki/File:Solid_yellow.svg",
+            "https://en.wikipedia.org/wiki/File:Solid_green.svg",
+            "https://en.wikipedia.org/wiki/File:Solid_orange.svg"
+        ];
+
+        // This picks a completely random index from the array every time
+        const randomIndex = Math.floor(Math.random() * links.length);
+        
+        // Instantly redirects the scanner to the random link
+        window.location.replace(links[randomIndex]);
+    </script>
+</head>
+<body>
+    <p>Loading your destination...</p>
+</body>
+</html>
