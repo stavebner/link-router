@@ -1,48 +1,118 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Redirecting...</title>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Choose Payment Group</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f5f5f5;
+        color: #222;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      p {
+        margin-bottom: 25px;
+        color: #555;
+      }
+
+      .group-button {
+        width: 220px;
+        padding: 16px;
+        margin: 8px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        color: white;
+      }
+
+      .bit {
+        background: #1687f8;
+      }
+
+      .paybox {
+        background: #19a56b;
+      }
+
+      .group-button:hover {
+        filter: brightness(0.9);
+      }
+
+      #status {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Select a group</h1>
+    <p>Please choose your payment group.</p>
+
+    <button class="group-button bit" onclick="selectGroup('BIT')">BIT</button>
+
+    <button class="group-button paybox" onclick="selectGroup('PAYBOX')">
+      PAYBOX
+    </button>
+
+    <p id="status" role="status"></p>
+
     <script>
-        // Group A links
-        const linksA = [
-            "https://en.wikipedia.org/wiki/File:Solid_red.svg",
-            "https://en.wikipedia.org/wiki/File:Solid_blue.svg",
-            "https://en.wikipedia.org/wiki/File:Solid_yellow.svg"
-        ];
+      // Group A links
+      const bitLinks = [
+        "https://www.bitpay.co.il/app/me/50BA2B18-2080-9664-37A6-2CFCF634082A4C66",
+        "https://www.bitpay.co.il/app/me/3FBF24A4-A1C9-73E3-204B-EC98697C0037B7A2",
+        "https://www.bitpay.co.il/app/me/DE0AE499-A7B7-3236-C318-3BC0A7208F547B29",
+        "https://www.bitpay.co.il/app/me/688C12C5-A56F-B0EC-D50F-CF3DF91C073A5F02",
+      ];
 
-        // Group B links
-        const linksB = [
-            "https://en.wikipedia.org/wiki/File:Dog.png",
-            "https://en.wikipedia.org/wiki/File:Cat.png"
-        ];
+      // Group B links
+      const payboxLinks = ["https://links.payboxapp.com/XnOyaL5Ih7b",];
 
-        // Identify which QR code was scanned
-        const params = new URLSearchParams(window.location.search);
-        const group = params.get("group");
+      const bitGroupName = "BIT";
+      const payboxGroupName = "PAYBOX";
 
-        // Select the appropriate group
+      const params = new URLSearchParams(window.location.search);
+      const group = params.get("group");
+
+      function selectGroup(groupName) {
         let links;
 
-        if (group === "COLORS") {
-            links = linksA;
-        } else if (group === "ANIMALS") {
-            links = linksB;
+        if (groupName === bitGroupName) {
+          links = bitLinks;
+        } else if (groupName === payboxGroupName) {
+          links = payboxLinks;
         } else {
-            document.addEventListener("DOMContentLoaded", () => {
-                document.body.textContent =
-                    "Invalid or missing group. Please scan a valid QR code.";
-            });
-            throw new Error("Invalid or missing group parameter");
+          return;
         }
 
-        // Choose a random link from the selected group
-        const randomIndex = Math.floor(Math.random() * links.length);
+        if (links.length === 0) {
+          document.getElementById("status").textContent =
+            "No links are configured for " + groupName + ".";
+          return;
+        }
 
-        // Redirect to the chosen destination
+        const randomIndex = Math.floor(Math.random() * links.length);
         window.location.replace(links[randomIndex]);
+      }
+
+      // If a valid group is supplied in the QR URL, redirect immediately.
+      // Otherwise, show the group selection screen.
+      if (group === bitGroupName || group === payboxGroupName) {
+        selectGroup(group);
+      }
     </script>
-</head>
-<body>
-    <p>Loading your destination...</p>
-</body>
+  </body>
 </html>
