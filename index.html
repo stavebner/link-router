@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,8 +12,8 @@
 
         // Group B links
         const linksB = [
-            "https://en.wikipedia.org/wiki/File:Solid_green.svg",
-            "https://en.wikipedia.org/wiki/File:Solid_orange.svg"
+            "https://en.wikipedia.org/wiki/File:Dog.png",
+            "https://en.wikipedia.org/wiki/File:Cat.png"
         ];
 
         // Identify which QR code was scanned
@@ -24,9 +23,9 @@
         // Select the appropriate group
         let links;
 
-        if (group === "A") {
+        if (group === "COLORS") {
             links = linksA;
-        } else if (group === "B") {
+        } else if (group === "ANIMALS") {
             links = linksB;
         } else {
             document.addEventListener("DOMContentLoaded", () => {
@@ -47,4 +46,3 @@
     <p>Loading your destination...</p>
 </body>
 </html>
-```
