@@ -1,21 +1,45 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
     <title>Redirecting...</title>
     <script>
-        // Replace these with your actual 3-5 links
-        const links = [
+        // Group A links
+        const linksA = [
             "https://en.wikipedia.org/wiki/File:Solid_red.svg",
             "https://en.wikipedia.org/wiki/File:Solid_blue.svg",
-            "https://en.wikipedia.org/wiki/File:Solid_yellow.svg",
+            "https://en.wikipedia.org/wiki/File:Solid_yellow.svg"
+        ];
+
+        // Group B links
+        const linksB = [
             "https://en.wikipedia.org/wiki/File:Solid_green.svg",
             "https://en.wikipedia.org/wiki/File:Solid_orange.svg"
         ];
 
-        // This picks a completely random index from the array every time
+        // Identify which QR code was scanned
+        const params = new URLSearchParams(window.location.search);
+        const group = params.get("group");
+
+        // Select the appropriate group
+        let links;
+
+        if (group === "A") {
+            links = linksA;
+        } else if (group === "B") {
+            links = linksB;
+        } else {
+            document.addEventListener("DOMContentLoaded", () => {
+                document.body.textContent =
+                    "Invalid or missing group. Please scan a valid QR code.";
+            });
+            throw new Error("Invalid or missing group parameter");
+        }
+
+        // Choose a random link from the selected group
         const randomIndex = Math.floor(Math.random() * links.length);
-        
-        // Instantly redirects the scanner to the random link
+
+        // Redirect to the chosen destination
         window.location.replace(links[randomIndex]);
     </script>
 </head>
@@ -23,3 +47,4 @@
     <p>Loading your destination...</p>
 </body>
 </html>
+```
