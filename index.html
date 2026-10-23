@@ -70,48 +70,133 @@
     <p id="status" role="status"></p>
 
     <script>
-      // Group A links
-      const bitLinks = [
-        "https://www.bitpay.co.il/app/me/50BA2B18-2080-9664-37A6-2CFCF634082A4C66",
-        "https://www.bitpay.co.il/app/me/3FBF24A4-A1C9-73E3-204B-EC98697C0037B7A2",
-        "https://www.bitpay.co.il/app/me/DE0AE499-A7B7-3236-C318-3BC0A7208F547B29",
-        "https://www.bitpay.co.il/app/me/688C12C5-A56F-B0EC-D50F-CF3DF91C073A5F02",
-        "https://www.bitpay.co.il/app/me/50BA2B18-2080-9664-37A6-2CFCF634082A4C66",
-        "https://www.bitpay.co.il/app/me/56953216-4B63-8807-4F7A-02E0FAD84F9F4ED4",
-      ];
-
-      // Group B links
-      const payboxLinks = ["https://links.payboxapp.com/XnOyaL5Ih7b",];
-
+      // Configuration
+      const LIMIT = 25;
       const bitGroupName = "BIT";
       const payboxGroupName = "PAYBOX";
 
-      const params = new URLSearchParams(window.location.search);
-      const group = params.get("group");
+      // Link definitions
+      const bitLinks = [
+        {
+          name: "Reut",
+          url: "https://www.bitpay.co.il/app/me/50BA2B18-2080-9664-37A6-2CFCF634082A4C66",
+          received: 13,
+        },
+        {
+          name: "Itamar",
+          url: "https://www.bitpay.co.il/app/me/3FBF24A4-A1C9-73E3-204B-EC98697C0037B7A2",
+          received: 6,
+        },
+        {
+          name: "Itamar's mom",
+          url: "https://www.bitpay.co.il/app/me/DE0AE499-A7B7-3236-C318-3BC0A7208F547B29",
+          received: 1,
+        },
+        {
+          name: "Itamar's dad",
+          url: "https://www.bitpay.co.il/app/me/688C12C5-A56F-B0EC-D50F-CF3DF91C073A5F02",
+          received: 0,
+        },
+        {
+          name: "Reut's mom",
+          url: "https://www.bitpay.co.il/app/me/A8376944-D30F-6DA9-26EB-B77058EBA0DF474D",
+          received: 12,
+        },
+        {
+          name: "Reut's dad",
+          url: "https://www.bitpay.co.il/app/me/56953216-4B63-8807-4F7A-02E0FAD84F9F4ED4",
+          received: 19,
+        },
+      ];
 
-      function selectGroup(groupName) {
-        let links;
+      const payboxLinks = ["https://links.payboxapp.com/XnOyaL5Ih7b"];
 
+      // Calculate a link's weight from its remaining target.
+      const calculateWeight = (link) => {
+        const remaining = Math.max(0, LIMIT - link.received);
+
+        return remaining * multiplier;
+      };
+
+      // Keep only links that can still receive payments.
+      const getEligibleLinks = (links) =>
+        links
+          .map((link) => ({
+            ...link,
+            weight: calculateWeight(link),
+          }))
+          .filter((link) => link.weight > 0);
+
+      // Choose one link according to its relative weight.
+      const chooseWeightedLink = (links) => {
+        const totalWeight = links.reduce(
+          (total, link) => total + link.weight,
+          0,
+        );
+
+        if (totalWeight <= 0) {
+          return null;
+        }
+
+        let random = Math.random() * totalWeight;
+
+        for (const link of links) {
+          random -= link.weight;
+
+          if (random < 0) {
+            return link;
+          }
+        }
+
+        return null;
+      };
+
+      // Return the links belonging to the requested group.
+      const getGroupLinks = (groupName) => {
         if (groupName === bitGroupName) {
-          links = bitLinks;
-        } else if (groupName === payboxGroupName) {
-          links = payboxLinks;
-        } else {
+          return getEligibleLinks(bitLinks);
+        }
+
+        if (groupName === payboxGroupName) {
+          return payboxLinks.map((url) => ({
+            url,
+            weight: 1,
+          }));
+        }
+
+        return null;
+      };
+
+      // Select a destination and redirect to it.
+      const selectGroup = (groupName) => {
+        const links = getGroupLinks(groupName);
+
+        if (links === null) {
           return;
         }
 
         if (links.length === 0) {
           document.getElementById("status").textContent =
-            "No links are configured for " + groupName + ".";
+            "No eligible links are configured for " + groupName + ".";
           return;
         }
 
-        const randomIndex = Math.floor(Math.random() * links.length);
-        window.location.replace(links[randomIndex]);
-      }
+        const selectedLink = chooseWeightedLink(links);
 
-      // If a valid group is supplied in the QR URL, redirect immediately.
-      // Otherwise, show the group selection screen.
+        if (selectedLink === null) {
+          document.getElementById("status").textContent =
+            "Unable to select a link for " + groupName + ".";
+          return;
+        }
+
+        window.location.replace(selectedLink.url);
+      };
+
+      // Read the requested group from the URL.
+      const params = new URLSearchParams(window.location.search);
+      const group = params.get("group");
+
+      // Start the redirect only for a valid group.
       if (group === bitGroupName || group === payboxGroupName) {
         selectGroup(group);
       }
