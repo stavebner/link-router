@@ -109,15 +109,30 @@
         },
       ];
 
-      const payboxLinks = ["https://links.payboxapp.com/XnOyaL5Ih7b"];
+      const payboxLinks = [
+        {
+          name: "PAYBOX 1",
+          url: "https://links.payboxapp.com/XnOyaL5Ih7b",
+          weight: 1,
+        },
+        {
+          name: "PAYBOX 2",
+          url: "https://links.payboxapp.com/6jg9C7fjt7b",
+          weight: 1,
+        },
+      ];
 
       // Calculate a link's weight from its remaining target.
       const calculateWeight = (link) => {
+        if (link.received === undefined) {
+          return link.weight;
+        }
+
         const remaining = Math.max(0, LIMIT - link.received);
+        const multiplier = link.weightMultiplier ?? 1;
 
         return remaining * multiplier;
       };
-
       // Keep only links that can still receive payments.
       const getEligibleLinks = (links) =>
         links
@@ -158,10 +173,7 @@
         }
 
         if (groupName === payboxGroupName) {
-          return payboxLinks.map((url) => ({
-            url,
-            weight: 1,
-          }));
+          return getEligibleLinks(payboxLinks);
         }
 
         return null;
